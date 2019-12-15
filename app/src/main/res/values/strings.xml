@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Голосовой решатель</string>
+    <string name="input_task">Введите уравнение</string>
+    <string name="unsolveble">К сожалению, мы не можем решить это уравнение</string>
+    <string name="err_request">Неизвестная ошибка</string>
+    <string name="one_root">Данное уравнение имеет одно решение:</string>
+    <string name="more_roots">Решением данного уравнения являются корни:</string>
+    <string name="no_roots">Для данного уравнения решений нет</string>
+    <string name="inf_roots">Уравнение имеет бесконечно много решений</string>
+</resources>
