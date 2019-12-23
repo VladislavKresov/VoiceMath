@@ -1,8 +1,84 @@
 package com.example.voiceinputmath;
 
+import java.util.ArrayList;
+
 public class Solver {
 
-    public static String linear(String equation){
+    public String equation;
+
+    public Solver(String equation){
+        this.equation = equation;
+    }
+
+    private String flip(String line){
+        for (int i = 0; i < line.length(); i++) {
+            if(line.charAt(i)=='+')
+                line = line.substring(0,i) + "-" + line.substring(i+1);
+            else if(line.charAt(i)=='-')
+                line = line.substring(0,i) + "+" + line.substring(i+1);
+        }
+        return line;
+    }
+
+    public String reduce(String equation){
+
+        String answer = "";
+
+        if(equation.contains("="))
+        {
+            for (int i = 0; i < equation.length()-1; i++) {
+                if(equation.charAt(i)=='=')
+                    equation = equation.substring(0,i)+flip(equation.substring(i+1));
+            }
+        }
+
+        ArrayList<String> numeral = Formatter.regEx(equation, Formatter.NUMERAL_PATTERN);
+        ArrayList<String> linear = Formatter.regEx(equation, Formatter.LINEAR_PATTERN);
+        ArrayList<String> powered = Formatter.regEx(equation, Formatter.POWERED_PATTERN);
+
+        String numbers ="0";
+        for (String i:numeral) {
+            numbers = Integer.parseInt(numbers)+Integer.parseInt(i)+"";
+        }
+
+        String linears = "0";
+        for (String i:linear) {
+            linears = Integer.parseInt(linears)+Integer.parseInt(i.replace("x",""))+"";
+        }
+        linears+="x";
+
+        for (int i = 0; i < powered.size()-1; i++) {
+            for (int j = i+1; j < powered.size(); j++) {
+                if(Formatter.regEx(powered.get(i),Formatter.POW_PATTERN).get(0).equals(Formatter.regEx(powered.get(j),Formatter.POW_PATTERN).get(0))){
+                    String pow = Formatter.regEx(powered.get(i),Formatter.POW_PATTERN).get(0);
+                    String num1 = powered.get(i).replace("x"+pow,"");
+                    String num2 = powered.get(j).replace("x"+pow,"");
+
+                    powered.set(i, Integer.parseInt(num1)+Integer.parseInt(num2)+"x"+pow);
+                    powered.remove(j);
+                }
+            }
+        }
+
+        for (String i:powered) {
+            if(!i.replace("x"+Formatter.regEx(i,Formatter.POW_PATTERN).get(0),"").equals("0"))
+            answer += Formatter.formatLine(i);
+        }
+        if(!linears.equals("0"))
+            answer += Formatter.formatLine((linears));
+
+        if(!numbers.equals("0"))
+            answer += Formatter.formatLine(numbers);
+
+        if(!answer.equals(""))
+            answer+="=0";
+        else
+            answer="0";
+
+        return Formatter.formatLine(answer);
+    }
+
+    public String linear(String equation) {
         int n = equation.length(), sign = 1, coeff = 0;
         int total = 0, i = 0;
 
@@ -51,7 +127,7 @@ public class Solver {
         return (Integer.toString(ans));
     }
 
-    public static String quadratic(String equation){
+    public String quadratic(String equation){
             if(equation.contains("=")) {
             int a = 0, b = 0, c = 0;
             int i = 0, n = equation.length();
@@ -135,7 +211,7 @@ public class Solver {
         } else throw new IllegalArgumentException();
     }
 
-    public static String powered(String equation){
+    public String powered(String equation){
         int i = 0, total = 0, coeff = 0, sign = 1, power = 1;
         int N = equation.length();
         for (int j = 0; j < N; j++) {
@@ -194,7 +270,7 @@ public class Solver {
 
     }
 
-    public static int factorial(int n) {
+    public int factorial(int n) {
         if (n == 0) return 1;
         return n * factorial(n-1);
     }

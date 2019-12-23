@@ -49,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 if(!charSequence.toString().isEmpty()) {
-                    solve(formatLine(charSequence.toString()));
+                    solve(Formatter.formatLine(charSequence.toString()));
                 } else {
                     tv_answer.setText("");
                 }
@@ -90,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if(requestCode == VOICE_RECOGNITION_REQUEST_CODE && resultCode == RESULT_OK){
             ArrayList commandlist = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
-            String input = formatLine(commandlist.get(0).toString());
+            String input = Formatter.formatLine(commandlist.get(0).toString());
             if (input.contains(")^"))
             et_task.setText("("+input);
             else et_task.setText(input);
@@ -102,13 +102,14 @@ public class MainActivity extends AppCompatActivity {
 
     public void solve(String input){
         try {
+            Solver solver = new Solver(input);
             String[] roots;
             if(input.contains(")^")) {
-                roots = Solver.powered(input).split("or");
+                roots = solver.powered(input).split("or");
             } else if(input.contains("x^2")){
-                roots = Solver.quadratic(input).split("or");
+                roots = solver.quadratic(input).split("or");
             } else{
-                roots = Solver.linear(input).split("or");
+                roots = solver.linear(input).split("or");
             }
             if(roots[0]=="")
                 throw new IllegalArgumentException();
@@ -133,41 +134,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private String formatLine(String line) {
 
-        line = line.replaceAll("((И|и)кс|(X|x))","x");
-        line = line.replaceAll("(В|в)с(ё|е) в",")^");
-        line = line.replaceAll(" (В|в) ","^");
-        line = line.replaceAll("(К|к)вадрат","^2");
-
-        line = line.replaceAll("(П|п)люс","+");
-        line = line.replaceAll("(М|м)инус","-");
-
-        line = line.replaceAll("(Н|н)(о|у)л(ь|ю)","0");
-        line = line.replaceAll("(О|о)дин","1");
-        line = line.replaceAll("(Д|д)ва","2");
-        line = line.replaceAll("(Т|т)ри","3");
-        line = line.replaceAll("(Ч|ч)етыре","4");
-        line = line.replaceAll("(П|п)ять","5");
-        line = line.replaceAll("(Ш|ш)есть","6");
-        line = line.replaceAll("(С|с)емь","7");
-        line = line.replaceAll("(В|в)осемь","8");
-        line = line.replaceAll("(Д|д)евять","9");
-        line = line.replaceAll("(Р|р)авно"," = ");
-
-        line = line.replaceAll("[a-w]","");
-        line = line.replaceAll("[y-z]","");
-        line = line.replaceAll("[A-W]","");
-        line = line.replaceAll("[Y-Z]","");
-        line = line.replaceAll("[а-я]","");
-        line = line.replaceAll("[А-Я]","");
-        line = line.replaceAll(" ","");
-        line = line.replaceAll("(-\\+|\\+-)","-");
-        line = line.replaceAll("(\\+\\+|--)","+");
-        line = line.replaceAll("\\(","");
-
-        return line;
-    }
 
 
     private void initViews() {
