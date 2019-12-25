@@ -58,14 +58,30 @@ public class Formatter {
         line = line.replaceAll("[А-Я]","");
         line = line.replaceAll("\\+"," +");
         line = line.replaceAll("-"," -");
-        line = line.replaceAll("="," =");
+        line = line.replaceAll("="," = ");
         line = line.replaceAll("(М|м)инус"," -");
         line = line.replaceAll("(-\\+|\\+-)"," -");
         line = line.replaceAll("(\\+\\+|--)"," +");
         line = line.replaceAll("\\(","");
 
+        for (int i = 0; i < line.length() - 1; i++) {
+            if((line.charAt(i)=='+' || line.charAt(i)=='-') && line.charAt(i+1)=='x')
+                line = line.substring(0,i+1)+"1"+line.substring(i+1);
+
+        }
+
         line += " ";
         return line;
     }
+
+    public static String output(String line){
+
+        line = line.replaceAll(" ","");
+        line = line.replaceAll("1x","x");
+        if(line.charAt(0)=='+') line = line.substring(1);
+
+        return line;
+    }
+
 
 }

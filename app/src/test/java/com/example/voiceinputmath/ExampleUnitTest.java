@@ -28,7 +28,13 @@ public class ExampleUnitTest {
 
     @Test
     public void test_reduce(){
-        Solver test = new Solver(formatLine("3x^3+2x^2+1x+5+3x^3+2x^2+1x+5=0"));
-        System.out.println(test.reduce(test.equation));
+        Solver test = new Solver(formatLine("1x-6x=2"));
+        System.out.println(test.linear(test.equation));
+    }
+
+    @Test
+    public void test_quadratic(){
+        Solver test = new Solver(formatLine("x^2=25"));
+        System.out.println(test.powered(test.equation));
     }
 }
