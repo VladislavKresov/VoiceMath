@@ -77,12 +77,14 @@ public class Solver {
 
     public String linear(String equation) {
         equation = reduce(equation);
+        if(equation.contains("x") && !Formatter.regEx(equation,Formatter.NUMERAL_PATTERN).isEmpty()) {
+            int coef = -Integer.parseInt(Formatter.regEx(equation, Formatter.LINEAR_PATTERN).get(0).replace("x", ""));
+            int val = Integer.parseInt(Formatter.regEx(equation, Formatter.NUMERAL_PATTERN).get(0));
+            double x = (double) val / coef;
+            equation = "x=" + x;
+        }
 
-        int coef = - Integer.parseInt(Formatter.regEx(equation, Formatter.LINEAR_PATTERN).get(0).replace("x",""));
-        int val = Integer.parseInt(Formatter.regEx(equation,Formatter.NUMERAL_PATTERN).get(0));
-        double x =(double) val/coef;
-        equation = "x="+x;
-        return equation;
+        return Formatter.output(equation);
     }
 
     public String quadratic(String equation){
@@ -120,17 +122,19 @@ public class Solver {
     public String powered(String equation){
         equation = reduce(equation);
         ArrayList<String> powers = Formatter.regEx(equation,Formatter.POW_PATTERN);
+        if(!powers.isEmpty()) {
+            int maxPow = Integer.parseInt(powers.get(0).replace("^", ""));
+            for (int i = 0; i < powers.size(); i++) {
+                int pow = Integer.parseInt(powers.get(i).replace("^", ""));
+                if (pow > maxPow)
+                    maxPow = pow;
+            }
 
-        int maxPow = Integer.parseInt(powers.get(0).replace("^",""));
-        for (int i = 0; i < powers.size(); i++) {
-            int pow = Integer.parseInt(powers.get(i).replace("^",""));
-            if(pow>maxPow)
-                maxPow = pow;
+            if (maxPow == 2)
+                return quadratic(equation);
         }
-
-        if(maxPow == 2)
-            return quadratic(equation);
-
+        else
+            equation = linear(equation);
         return Formatter.output(equation);
     }
 

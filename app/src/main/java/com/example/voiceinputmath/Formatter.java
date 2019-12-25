@@ -32,12 +32,11 @@ public class Formatter {
         }
 
         line = line.replaceAll("((И|и)кс|(X|x))","x");
-        line = line.replaceAll("(В|в)с(ё|е) в",")^");
-        line = line.replaceAll(" (В|в) ","^");
+        line = line.replaceAll("(В|в)","^");
         line = line.replaceAll("(К|к)вадрат","^2");
 
-        line = line.replaceAll("(П|п)люс"," +");
-        line = line.replaceAll("(М|м)инус"," -");
+        line = line.replaceAll("(П|п)люс","+");
+        line = line.replaceAll("(М|м)инус","-");
         line = line.replaceAll("(Н|н)(о|у)л(ь|ю)","0");
         line = line.replaceAll("(О|о)дин","1");
         line = line.replaceAll("(Д|д)ва","2");
@@ -48,7 +47,7 @@ public class Formatter {
         line = line.replaceAll("(С|с)емь","7");
         line = line.replaceAll("(В|в)осемь","8");
         line = line.replaceAll("(Д|д)евять","9");
-        line = line.replaceAll("(Р|р)авно"," =");
+        line = line.replaceAll("(Р|р)авно","=");
 
         line = line.replaceAll("[a-w]","");
         line = line.replaceAll("[y-z]","");
@@ -59,10 +58,10 @@ public class Formatter {
         line = line.replaceAll("\\+"," +");
         line = line.replaceAll("-"," -");
         line = line.replaceAll("="," = ");
-        line = line.replaceAll("(М|м)инус"," -");
         line = line.replaceAll("(-\\+|\\+-)"," -");
         line = line.replaceAll("(\\+\\+|--)"," +");
-        line = line.replaceAll("\\(","");
+        line = line.replaceAll("\\^1","");
+
 
         for (int i = 0; i < line.length() - 1; i++) {
             if((line.charAt(i)=='+' || line.charAt(i)=='-') && line.charAt(i+1)=='x')

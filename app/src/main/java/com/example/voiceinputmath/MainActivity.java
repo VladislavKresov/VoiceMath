@@ -90,8 +90,8 @@ public class MainActivity extends AppCompatActivity {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if(requestCode == VOICE_RECOGNITION_REQUEST_CODE && resultCode == RESULT_OK){
             ArrayList commandlist = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
-            String input = Formatter.output(commandlist.get(0).toString());
-            et_task.setText(input);
+            String input = Formatter.formatLine(commandlist.get(0).toString());
+            et_task.setText(Formatter.output(input));
 
         } else Toast.makeText(this, getText(R.string.err_request), Toast.LENGTH_SHORT).show();
 
