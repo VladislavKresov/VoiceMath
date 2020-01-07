@@ -105,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
             String answer;
 
             if(!input.contains("x"))
-                answer = solver.reduce(input);
+                answer = Formatter.output(solver.reduce(input));
             else
             if(!input.contains("^"))
                 answer = solver.linear(input);

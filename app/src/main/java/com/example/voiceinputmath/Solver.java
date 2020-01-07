@@ -67,8 +67,8 @@ public class Solver {
         if(Integer.parseInt(linears.replace("x",""))!=0)
             answer += Formatter.formatLine((linears));
 
-        if(Integer.parseInt(numbers)!=0)
-            answer += Formatter.formatLine(numbers);
+        answer += Formatter.formatLine(numbers);
+
         if(answer.equals(""))
             answer+="0";
 
@@ -78,10 +78,13 @@ public class Solver {
     public String linear(String equation) {
         equation = reduce(equation);
         if(equation.contains("x") && !Formatter.regEx(equation,Formatter.NUMERAL_PATTERN).isEmpty()) {
-            int coef = -Integer.parseInt(Formatter.regEx(equation, Formatter.LINEAR_PATTERN).get(0).replace("x", ""));
-            int val = Integer.parseInt(Formatter.regEx(equation, Formatter.NUMERAL_PATTERN).get(0));
+            int coef = Integer.parseInt(Formatter.regEx(equation, Formatter.LINEAR_PATTERN).get(0).replace("x", ""));
+            int val = -Integer.parseInt(Formatter.regEx(equation, Formatter.NUMERAL_PATTERN).get(0));
             double x = (double) val / coef;
-            equation = "x=" + x;
+            if(x-(int)x==0)
+                equation = "x=" + (int)x;
+            else
+                equation = "x=" + val + "/" + coef;
         }
 
         return Formatter.output(equation);
@@ -103,17 +106,43 @@ public class Solver {
                 c = Integer.parseInt(Formatter.regEx(equation,Formatter.NUMERAL_PATTERN).get(0));
 
             int discriminant = b*b-4*a*c;
+            answer = "D="+discriminant + "\n";
             if(discriminant<0)
-                answer = "Нет решений для действительных чисел";
+                answer += "Нет решений для действительных чисел";
             else
                 if(discriminant == 0){
                     double x =(double) -b/2*a;
-                    answer = "Один действительный корень: "+x;
+                    if((x-(int)x)%10==0)
+                        answer += "Один действительный корень: "+x;
+                    else
+                        answer += "Один действительный корень: "+-b+"/"+2*a;
                 }
                 else {
-                    double x1 = (double) (-b-Math.sqrt(discriminant))/2*a;
-                    double x2 = (double) (-b+Math.sqrt(discriminant))/2*a;
-                    answer = "Два действительных корня: "+x1+" и "+x2;
+                    double x1 = (-b-Math.sqrt(discriminant))/2*a;
+                    double x2 = (-b+Math.sqrt(discriminant))/2*a;
+                    answer += "Два действительных корня:\n";
+
+                    answer+="x=";
+
+                    if((x1-(int)x1)%10==0)
+                        answer+=(int)x1;
+                    else
+                    {
+                        if((-b-Math.sqrt(discriminant))%10==0)
+                            answer +=(int)(-b-Math.sqrt(discriminant)) + "/" + 2*a;
+                        else answer += "(" + -b + " - " + "-/"+discriminant+" )" + "/" +2*a;
+                    }
+
+                    answer+="\nи\nx=";
+
+                    if((x2-(int)x2)%10==0)
+                        answer+=(int)x2;
+                    else
+                    {
+                        if((-b-Math.sqrt(discriminant))%10==0)
+                            answer += (int)(-b+Math.sqrt(discriminant)) + "/" + 2*a;
+                        else answer += "(" + -b + " + " + "-/"+discriminant+" )" + "/" +2*a;
+                    }
                 }
 
                 return answer;
@@ -131,7 +160,9 @@ public class Solver {
             }
 
             if (maxPow == 2)
-                return quadratic(equation);
+                return Formatter.output(equation)+"=0" + "\n" + quadratic(equation);
+            else
+                equation += "=0";
         }
         else
             equation = linear(equation);

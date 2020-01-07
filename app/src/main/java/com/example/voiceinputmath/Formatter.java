@@ -32,7 +32,7 @@ public class Formatter {
         }
 
         line = line.replaceAll("((И|и)кс|(X|x))","x");
-        line = line.replaceAll("(В|в)","^");
+        line = line.replaceAll("(В|в)степени","^");
         line = line.replaceAll("(К|к)вадрат","^2");
 
         line = line.replaceAll("(П|п)люс","+");
