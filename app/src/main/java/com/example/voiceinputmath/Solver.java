@@ -64,214 +64,109 @@ public class Solver {
             if(!i.replace("x"+Formatter.regEx(i,Formatter.POW_PATTERN).get(0),"").equals("0"))
             answer += Formatter.formatLine(i);
         }
-        if(!linears.equals("0"))
+        if(Integer.parseInt(linears.replace("x",""))!=0)
             answer += Formatter.formatLine((linears));
 
-        if(!numbers.equals("0"))
-            answer += Formatter.formatLine(numbers);
+        answer += Formatter.formatLine(numbers);
 
-        if(!answer.equals(""))
-            answer+="=0";
-        else
-            answer="0";
+        if(answer.equals(""))
+            answer+="0";
 
         return Formatter.formatLine(answer);
     }
 
     public String linear(String equation) {
-        int n = equation.length(), sign = 1, coeff = 0;
-        int total = 0, i = 0;
-
-        for (int j = 0; j < n; j++)
-        {
-            if (equation.charAt(j) == '+' || equation.charAt(j) == '-')
-            {
-                if (j > i)
-                    total += sign * Integer.parseInt(equation.substring(i, j));
-                i = j;
-            }
-
-            // для: x, -x, +x
-            else if (equation.charAt(j) == 'x')
-            {
-                if ((i == j) || equation.charAt(j - 1) == '+')
-                    coeff += sign;
-
-                else if (equation.charAt(j - 1) == '-')
-                    coeff -= sign;
-
-                else
-                    coeff += sign * Integer.parseInt(equation.substring(i, j));
-                i = j + 1;
-            }
-
-            else if (equation.charAt(j) == '=')
-            {
-                if (j > i)
-                    total += sign * Integer.parseInt(equation.substring(i, j));
-                sign = -1;
-                i = j + 1;
-            }
+        equation = reduce(equation);
+        if(equation.contains("x") && !Formatter.regEx(equation,Formatter.NUMERAL_PATTERN).isEmpty()) {
+            int coef = Integer.parseInt(Formatter.regEx(equation, Formatter.LINEAR_PATTERN).get(0).replace("x", ""));
+            int val = -Integer.parseInt(Formatter.regEx(equation, Formatter.NUMERAL_PATTERN).get(0));
+            double x = (double) val / coef;
+            if(x-(int)x==0)
+                equation = "x=" + (int)x;
+            else
+                equation = "x=" + val + "/" + coef;
         }
 
-        if (i < n)
-            total = total + sign * Integer.parseInt(equation.substring(i));
-
-        if (coeff == 0 && total == 0)
-            return "Inf";
-
-        if (coeff == 0 && total != 0)
-            return "No";
-
-        int ans = -total / coeff;
-        return (Integer.toString(ans));
+        return Formatter.output(equation);
     }
 
     public String quadratic(String equation){
-            if(equation.contains("=")) {
-            int a = 0, b = 0, c = 0;
-            int i = 0, n = equation.length();
-            int signA = 1, signB = 1, signC = 1;
+            String answer;
 
-            for (int j = 0; j < n; j++) {
-                if (equation.charAt(j) == '+' || equation.charAt(j) == '-')
-                {
-                    if (j > i)
-                        c += signC * Integer.parseInt(equation.substring(i, j));
-                    i = j;
+            equation = reduce(equation);
+
+            int a;
+            int b=0;
+            int c=0;
+
+            a = Integer.parseInt(Formatter.regEx(equation,Formatter.POWERED_PATTERN).get(0).replaceAll("x\\^\\d",""));
+            if(!Formatter.regEx(equation,Formatter.LINEAR_PATTERN).isEmpty())
+                b = Integer.parseInt(Formatter.regEx(equation,Formatter.LINEAR_PATTERN).get(0).replaceAll("x",""));
+            if(!Formatter.regEx(equation,Formatter.NUMERAL_PATTERN).isEmpty())
+                c = Integer.parseInt(Formatter.regEx(equation,Formatter.NUMERAL_PATTERN).get(0));
+
+            int discriminant = b*b-4*a*c;
+            answer = "D="+discriminant + "\n";
+            if(discriminant<0)
+                answer += "Нет решений для действительных чисел";
+            else
+                if(discriminant == 0){
+                    double x =(double) -b/2*a;
+                    if((x-(int)x)%10==0)
+                        answer += "Один действительный корень: "+x;
+                    else
+                        answer += "Один действительный корень: "+-b+"/"+2*a;
                 }
-                // для: x^2, -x^2, +x^2, x, -x, +x
-                else if (equation.charAt(j) == 'x')
-                {
-                    if(j+2<n)
+                else {
+                    double x1 = (-b-Math.sqrt(discriminant))/2*a;
+                    double x2 = (-b+Math.sqrt(discriminant))/2*a;
+                    answer += "Два действительных корня:\n";
+
+                    answer+="x=";
+
+                    if((x1-(int)x1)%10==0)
+                        answer+=(int)x1;
+                    else
                     {
-                        if (equation.charAt(j + 1) == '^' && equation.charAt(j + 2) == '2') {
-                            if ((i == j) || equation.charAt(j - 1) == '+')
-                                a += signA;
-
-                            else if (equation.charAt(j - 1) == '-')
-                                a -= signA;
-
-                            else
-                                a += signA * Integer.parseInt(equation.substring(i, j));
-                            j+=2;
-                            i = j + 1;
-                        } else {
-                            if ((i == j) || equation.charAt(j - 1) == '+')
-                                b += signB;
-
-                            else if (equation.charAt(j - 1) == '-')
-                                b -= signB;
-
-                            else
-                                b += signB * Integer.parseInt(equation.substring(i, j));
-                            i = j + 1;
-                        }
+                        if((-b-Math.sqrt(discriminant))%10==0)
+                            answer +=(int)(-b-Math.sqrt(discriminant)) + "/" + 2*a;
+                        else answer += "(" + -b + " - " + "-/"+discriminant+" )" + "/" +2*a;
                     }
-                    else {
-                        if ((i == j) || equation.charAt(j - 1) == '+')
-                            b += signB;
 
-                        else if (equation.charAt(j - 1) == '-')
-                            b -= signB;
+                    answer+="\nи\nx=";
 
-                        else
-                            b += signB * Integer.parseInt(equation.substring(i, j));
-                        i = j + 1;
-                    }
-                } else if (equation.charAt(j) == '=')
-                {
-                    if (j > i)
-                        c += signC * Integer.parseInt(equation.substring(i, j));
-                    signC = -1;
-                    i = j + 1;
-                }
-            }
-            if (i < n)
-                c = c + signC * Integer.parseInt(equation.substring(i));
-
-            if(a == 0)
-                throw new IllegalArgumentException();
-            else {
-                String ans = "";
-                if((b*b-4*a*c)<0){
-                    ans+="No";
-                } else {
-                    double x1 = (-b + Math.sqrt(b * b - 4 * a * c)) / 2 * a;
-                    double x2 = (-b - Math.sqrt(b * b - 4 * a * c)) / 2 * a;
-                    if (x1 == x2) {
-                        ans+="x="+x1;
-                    } else {
-                        ans+=x1+"or"+x2;
+                    if((x2-(int)x2)%10==0)
+                        answer+=(int)x2;
+                    else
+                    {
+                        if((-b-Math.sqrt(discriminant))%10==0)
+                            answer += (int)(-b+Math.sqrt(discriminant)) + "/" + 2*a;
+                        else answer += "(" + -b + " + " + "-/"+discriminant+" )" + "/" +2*a;
                     }
                 }
-                return ans;
-            }
 
-        } else throw new IllegalArgumentException();
+                return answer;
     }
 
     public String powered(String equation){
-        int i = 0, total = 0, coeff = 0, sign = 1, power = 1;
-        int N = equation.length();
-        for (int j = 0; j < N; j++) {
-            if (equation.charAt(j) == '+' || equation.charAt(j) == '-')
-            {
-                if (j > i)
-                    total += sign * Integer.parseInt(equation.substring(i, j));
-                i = j;
+        equation = reduce(equation);
+        ArrayList<String> powers = Formatter.regEx(equation,Formatter.POW_PATTERN);
+        if(!powers.isEmpty()) {
+            int maxPow = Integer.parseInt(powers.get(0).replace("^", ""));
+            for (int i = 0; i < powers.size(); i++) {
+                int pow = Integer.parseInt(powers.get(i).replace("^", ""));
+                if (pow > maxPow)
+                    maxPow = pow;
             }
 
-            // для: x, -x, +x
-            else if (equation.charAt(j) == 'x')
-            {
-                if ((i == j) || equation.charAt(j - 1) == '+')
-                    coeff += sign;
-
-                else if (equation.charAt(j - 1) == '-')
-                    coeff -= sign;
-
-                else
-                    coeff += sign * Integer.parseInt(equation.substring(i, j));
-                i = j + 1;
-            }
-
-            else if (equation.charAt(j) == ')')
-            {
-                if (j > i)
-                    total += sign * Integer.parseInt(equation.substring(i, j));
-                i = j + 2;
-                break;
-            }
+            if (maxPow == 2)
+                return Formatter.output(equation)+"=0" + "\n" + quadratic(equation);
+            else
+                equation += "=0";
         }
-        if (i < N)
-            power = Integer.parseInt(equation.substring(i,N));
-
-        if (coeff == 0){
-            return "" + Math.pow(total,power);
-        }
-
-        if (coeff != 0 && total == 0){
-            return "x^"+power;
-        }
-
-        if(coeff!=0){
-            String answer = "";
-             int n = power;
-            for (int m = 0; m <= n; m++) {
-                answer+=(factorial(n)/(factorial(m)*factorial(n-m)))*((int)Math.pow(coeff,n-m))*((int)Math.pow(total,m)) + "x^"+(n-m);
-                if(m<n)
-                    answer+=" + ";
-            }
-            return answer;
-        }
-
-        return null;
-
+        else
+            equation = linear(equation);
+        return Formatter.output(equation);
     }
 
-    public int factorial(int n) {
-        if (n == 0) return 1;
-        return n * factorial(n-1);
-    }
 }
